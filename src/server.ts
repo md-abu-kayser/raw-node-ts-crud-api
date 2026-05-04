@@ -5,6 +5,7 @@ const server: Server = http.createServer(
   (req: IncomingMessage, res: ServerResponse) => {
     console.log("server is loading.......");
 
+    // root route
     if (req.url === "/" && req.method === "GET") {
       res.writeHead(200, { "content-type": "application/json" });
       res.end(
@@ -14,6 +15,17 @@ const server: Server = http.createServer(
         }),
       );
       return;
+    }
+
+    // health route
+    if (req.url === "/api" && req.method === "GET") {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(
+        JSON.stringify({
+          message: "Health message OK",
+          path: req.url,
+        }),
+      );
     }
 
     res.writeHead(404, { "content-type": "application/json" });
