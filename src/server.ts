@@ -26,6 +26,39 @@ const server: Server = http.createServer(
           path: req.url,
         }),
       );
+      return;
+    }
+
+    // post route
+    if (req.url === "/api/users" && req.method === "POST") {
+      let body = "";
+
+      req.on("data", (chunk) => {
+        body += chunk.toString();
+      });
+
+      req.on("end", () => {
+        try {
+          const parseBody = JSON.parse(body);
+
+          res.writeHead(200, { "content-type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "User created successfully",
+              data: parseBody,
+            }),
+          );
+        } catch (error) {
+          res.writeHead(400, { "content-type": "application/json" });
+          res.end(
+            JSON.stringify({
+              message: "Invalid JSON body",
+            }),
+          );
+        }
+      });
+
+      return;
     }
 
     res.writeHead(404, { "content-type": "application/json" });
