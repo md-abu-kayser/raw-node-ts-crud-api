@@ -17,5 +17,10 @@
   "bugs": {
     "url": "https://github.com/md-abu-kayser/raw-nodejs-api-server-typescript/issues"
   },
-  "homepage": "https://github.com/md-abu-kayser/raw-nodejs-api-server-typescript#readme"
+  "homepage": "https://github.com/md-abu-kayser/raw-nodejs-api-server-typescript#readme",
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
 }
