@@ -1,5 +1,4 @@
-import { resolve } from "node:dns";
-import { IncomingMessage } from "node:http";
+import { IncomingMessage } from "http";
 
 async function parseBody(req: IncomingMessage): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -15,6 +14,7 @@ async function parseBody(req: IncomingMessage): Promise<any> {
         reject(err);
       }
     });
+
     req.on("error", reject);
   });
 }

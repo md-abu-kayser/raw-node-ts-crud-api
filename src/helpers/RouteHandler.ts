@@ -1,9 +1,6 @@
-// Crating A Custom Router
+import { IncomingMessage, ServerResponse } from "http";
 
-import { IncomingMessage, ServerResponse } from "node:http";
-
-type RouteHandler = (req: IncomingMessage, res: ServerResponse) => void;
-
+export type RouteHandler = (req: IncomingMessage, res: ServerResponse) => void;
 export const routes: Map<string, Map<string, RouteHandler>> = new Map();
 
 function addRoutes(method: string, path: string, handler: RouteHandler) {

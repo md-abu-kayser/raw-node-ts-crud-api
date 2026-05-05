@@ -1,4 +1,4 @@
-import { ServerResponse } from "node:http";
+import { ServerResponse } from "http";
 
 function sendJson(res: ServerResponse, statusCode: number, data: any) {
   res.writeHead(statusCode, { "content-type": "application/json" });
