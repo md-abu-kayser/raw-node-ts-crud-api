@@ -1,17 +1,25 @@
 import { IncomingMessage } from "http";
 
-async function parseBody(req: IncomingMessage): Promise<any> {
+async function parseBody(
+  req: IncomingMessage,
+): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
     let body = "";
+
     req.on("data", (chunk) => {
-      body += chunk.toString(); // convert buffer to string
+      body += chunk.toString();
     });
 
     req.on("end", () => {
+      if (!body) {
+        resolve({});
+        return;
+      }
+
       try {
-        resolve(body ? JSON.parse(body) : {});
-      } catch (err: any) {
-        reject(err);
+        resolve(JSON.parse(body));
+      } catch {
+        reject(new Error("Invalid JSON body"));
       }
     });
 

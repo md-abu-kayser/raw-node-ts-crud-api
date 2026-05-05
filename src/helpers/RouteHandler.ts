@@ -1,11 +1,28 @@
 import { IncomingMessage, ServerResponse } from "http";
 
-export type RouteHandler = (req: IncomingMessage, res: ServerResponse) => void;
+export type Params = Record<string, string>;
+
+export type RequestWithParams = IncomingMessage & {
+  params?: Params;
+};
+
+export type RouteHandler = (
+  req: RequestWithParams,
+  res: ServerResponse,
+) => void | Promise<void>;
+
 export const routes: Map<string, Map<string, RouteHandler>> = new Map();
 
-function addRoutes(method: string, path: string, handler: RouteHandler) {
-  if (!routes.has(method)) routes.set(method, new Map());
-  routes.get(method)!.set(path, handler);
-}
+export function registerRoute(
+  method: string,
+  path: string,
+  handler: RouteHandler,
+) {
+  const upperMethod = method.toUpperCase();
 
-export default addRoutes;
+  if (!routes.has(upperMethod)) {
+    routes.set(upperMethod, new Map());
+  }
+
+  routes.get(upperMethod)!.set(path, handler);
+}
