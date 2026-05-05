@@ -1,3 +1,4 @@
+import parseBody from "../helpers/parseBody";
 import addRoutes from "../helpers/RouteHandler";
 import sendJson from "../helpers/sendJson";
 
@@ -13,4 +14,9 @@ addRoutes("GET", "/api", (req, res) => {
     message: "health route ok",
     path: req.url,
   });
+});
+
+addRoutes("POST", "/api/users", async (req, res) => {
+  const body = await parseBody(req);
+  sendJson(res, 201, { success: true, data: body });
 });
