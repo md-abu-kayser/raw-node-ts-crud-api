@@ -20,13 +20,13 @@ addRoutes("GET", "/api", (req, res) => {
 addRoutes("POST", "/api/users", async (req, res) => {
   const body = await parseBody(req);
 
+  // user json read
   const users = readUsers();
-
   const newUser = {
     id: Date.now(),
     ...body,
   };
-  users.push(newUser);
+  users?.push(newUser);
 
   writeUsers(users);
 
