@@ -1,44 +1,67 @@
-import http, { IncomingMessage, Server, ServerResponse } from "http";
+import http, { IncomingMessage, ServerResponse } from "http";
 import config from "./config";
 import "./routes";
+import { AppRequest } from "./types/http";
+import sendJson from "./helpers/sendJson";
 import {
   RouteHandler,
+  findDynamicRoute,
+  normalizePath,
   routes,
-  RequestWithParams,
-} from "./helpers/RouteHandler";
-import findDynamicRoute from "./helpers/dynamicRouteHandler";
+} from "./helpers/router";
 
-const server: Server = http.createServer(
+function runHandler(
+  handler: RouteHandler,
+  req: AppRequest,
+  res: ServerResponse,
+) {
+  Promise.resolve(handler(req, res)).catch((error) => {
+    console.error("Route handler error:", error);
+
+    if (!res.headersSent) {
+      sendJson(res, 500, {
+        success: false,
+        message: "Internal server error",
+      });
+    }
+  });
+}
+
+const server = http.createServer(
   (req: IncomingMessage, res: ServerResponse) => {
-    const method = req.method?.toUpperCase() || "";
-    const path = req.url || "/";
+    const method = req.method?.toUpperCase() ?? "";
+    const requestUrl = new URL(
+      req.url ?? "/",
+      `http://${req.headers.host ?? "localhost"}`,
+    );
+    const pathname = normalizePath(requestUrl.pathname);
 
     const methodMap = routes.get(method);
-    const directHandler: RouteHandler | undefined = methodMap?.get(path);
+    const staticHandler = methodMap?.get(pathname);
 
-    if (directHandler) {
-      directHandler(req as RequestWithParams, res);
-      return;
+    if (staticHandler) {
+      return runHandler(staticHandler, req as AppRequest, res);
     }
 
-    const dynamicMatch = findDynamicRoute(method, path);
+    const dynamicMatch = findDynamicRoute(method, pathname);
+
     if (dynamicMatch) {
-      (req as RequestWithParams).params = dynamicMatch.params;
-      dynamicMatch.handler(req as RequestWithParams, res);
-      return;
+      const appReq = req as AppRequest;
+      appReq.params = dynamicMatch.params;
+
+      return runHandler(dynamicMatch.handler, appReq, res);
     }
 
-    res.writeHead(404, { "content-type": "application/json" });
-    res.end(
-      JSON.stringify({
-        success: false,
-        message: "Route not found",
-        path,
-      }),
-    );
+    sendJson(res, 404, {
+      success: false,
+      message: "Route not found",
+      method,
+      path: pathname,
+    });
   },
 );
 
 server.listen(config.port, () => {
-  console.log(`Server is running on port ${config.port}`);
+  console.log(`Server is running on http://localhost:${config.port}`);
+  console.log(`Environment: ${config.nodeEnv}`);
 });
