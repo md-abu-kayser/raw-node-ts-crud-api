@@ -11,7 +11,7 @@ function getNextId(users: User[]) {
 }
 
 addRoute("GET", "/", (req, res) => {
-  // This is the home route, useful for a quick API identity check.
+  // Home route
   sendJson(res, 200, {
     success: true,
     message: "Hello from raw Node.js with TypeScript",
@@ -20,7 +20,7 @@ addRoute("GET", "/", (req, res) => {
 });
 
 addRoute("GET", "/health", (req, res) => {
-  // Health route is often used by clients, load balancers, and hosting platforms.
+  // Health route
   sendJson(res, 200, {
     success: true,
     message: "Server is healthy",
@@ -40,7 +40,7 @@ addRoute("GET", "/api/users", (req, res) => {
 });
 
 addRoute("GET", "/api/users/:id", (req, res) => {
-  const { id } = (req as AppRequest).params;
+  const id = (req as AppRequest).params?.id || "";
   const userId = parsePositiveId(id);
 
   if (!userId) {
@@ -106,7 +106,7 @@ addRoute("POST", "/api/users", async (req, res) => {
 
 addRoute("PUT", "/api/users/:id", async (req, res) => {
   try {
-    const { id } = (req as AppRequest).params;
+    const id = (req as AppRequest).params?.id || "";
     const userId = parsePositiveId(id);
 
     if (!userId) {
@@ -127,7 +127,6 @@ addRoute("PUT", "/api/users/:id", async (req, res) => {
       });
     }
 
-    // Update only allowed fields and keep the record consistent.
     if (body.name !== undefined && !isNonEmptyString(body.name)) {
       return sendJson(res, 400, {
         success: false,
@@ -159,7 +158,7 @@ addRoute("PUT", "/api/users/:id", async (req, res) => {
 });
 
 addRoute("DELETE", "/api/users/:id", (req, res) => {
-  const { id } = (req as AppRequest).params;
+  const id = (req as AppRequest).params?.id || "";
   const userId = parsePositiveId(id);
 
   if (!userId) {
