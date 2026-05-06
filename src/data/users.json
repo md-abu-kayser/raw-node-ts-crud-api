@@ -1,25 +1,14 @@
 [
   {
     "id": 1,
-    "name": "Mir Bhai"
+    "name": "Mir Bhai",
+    "createdAt": "2026-05-06T00:00:00.000Z",
+    "updatedAt": "2026-05-06T00:00:00.000Z"
   },
   {
     "id": 2,
-    "name": "Mezba Bhai"
-  },
-  {
-    "id": 10,
-    "roll": 7,
-    "name": "king",
-    "country": "BD"
-  },
-  {
-    "id": 1777988987337
-  },
-  {
-    "id": 100,
-    "roll": 7,
-    "name": "king",
-    "country": "BD"
+    "name": "Mezba Bhai",
+    "createdAt": "2026-05-06T00:00:00.000Z",
+    "updatedAt": "2026-05-06T00:00:00.000Z"
   }
 ]
