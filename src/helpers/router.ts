@@ -38,7 +38,6 @@ export function findDynamicRoute(method: string, pathname: string) {
   const urlParts = normalizePath(pathname).split("/");
 
   for (const [routePath, handler] of methodMap.entries()) {
-    // Only inspect routes that contain dynamic segments like ":id".
     if (!routePath.includes(":")) continue;
 
     const routeParts = normalizePath(routePath).split("/");

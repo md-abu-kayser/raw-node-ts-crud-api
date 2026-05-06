@@ -11,7 +11,6 @@ async function parseBody(req: IncomingMessage): Promise<unknown> {
 
     req.on("end", () => {
       try {
-        // Empty body becomes an empty object for convenience.
         resolve(body.trim() ? JSON.parse(body) : {});
       } catch (error) {
         reject(new Error("Invalid JSON body"));

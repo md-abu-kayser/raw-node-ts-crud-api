@@ -6,7 +6,6 @@ const dataDir = path.join(process.cwd(), "src", "data");
 const filePath = path.join(dataDir, "users.json");
 
 function ensureDatabaseFile() {
-  // Create the data directory and file if they do not exist.
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
   }
@@ -33,7 +32,6 @@ export function readUsers(): User[] {
 }
 
 export function writeUsers(users: User[]) {
-  // Write to a temporary file first, then replace the original file.
   const tempFilePath = `${filePath}.tmp`;
 
   fs.writeFileSync(

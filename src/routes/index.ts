@@ -10,8 +10,8 @@ function getNextId(users: User[]) {
   return users.length === 0 ? 1 : Math.max(...users.map((user) => user.id)) + 1;
 }
 
+// Home route
 addRoute("GET", "/", (req, res) => {
-  // Home route
   sendJson(res, 200, {
     success: true,
     message: "Hello from raw Node.js with TypeScript",
@@ -19,8 +19,8 @@ addRoute("GET", "/", (req, res) => {
   });
 });
 
+// Health route
 addRoute("GET", "/health", (req, res) => {
-  // Health route
   sendJson(res, 200, {
     success: true,
     message: "Server is healthy",
@@ -29,6 +29,7 @@ addRoute("GET", "/health", (req, res) => {
   });
 });
 
+// GET all route
 addRoute("GET", "/api/users", (req, res) => {
   const users = readUsers();
 
@@ -39,6 +40,7 @@ addRoute("GET", "/api/users", (req, res) => {
   });
 });
 
+// GET single route
 addRoute("GET", "/api/users/:id", (req, res) => {
   const id = (req as AppRequest).params?.id || "";
   const userId = parsePositiveId(id);
@@ -66,15 +68,25 @@ addRoute("GET", "/api/users/:id", (req, res) => {
   });
 });
 
+// POST route
 addRoute("POST", "/api/users", async (req, res) => {
   try {
-    const body = (await parseBody(req)) as { name?: unknown };
-    const name = body.name;
+    const body = (await parseBody(req)) as {
+      name?: unknown;
+      country?: unknown;
+      study?: unknown;
+    };
+    const { name, country, study } = body;
 
-    if (!isNonEmptyString(name)) {
+    if (
+      !isNonEmptyString(name) ||
+      !isNonEmptyString(country) ||
+      !isNonEmptyString(study)
+    ) {
       return sendJson(res, 400, {
         success: false,
-        message: "Name is required",
+        message:
+          "Name, country, and study are required and must be non-empty strings",
       });
     }
 
@@ -84,6 +96,8 @@ addRoute("POST", "/api/users", async (req, res) => {
     const newUser: User = {
       id: getNextId(users),
       name: name.trim(),
+      country: (country as string).trim(),
+      study: (study as string).trim(),
       createdAt: now,
       updatedAt: now,
     };
@@ -97,47 +111,43 @@ addRoute("POST", "/api/users", async (req, res) => {
       data: newUser,
     });
   } catch {
-    sendJson(res, 400, {
-      success: false,
-      message: "Invalid JSON body",
-    });
+    sendJson(res, 400, { success: false, message: "Invalid JSON body" });
   }
 });
 
+// PUT route
 addRoute("PUT", "/api/users/:id", async (req, res) => {
   try {
     const id = (req as AppRequest).params?.id || "";
     const userId = parsePositiveId(id);
 
-    if (!userId) {
-      return sendJson(res, 400, {
-        success: false,
-        message: "Invalid user id",
-      });
-    }
+    if (!userId)
+      return sendJson(res, 400, { success: false, message: "Invalid id" });
 
-    const body = (await parseBody(req)) as { name?: unknown };
+    const body = (await parseBody(req)) as {
+      name?: unknown;
+      country?: unknown;
+      study?: unknown;
+    };
     const users = readUsers();
-    const index = users.findIndex((user) => user.id === userId);
+    const index = users.findIndex((u) => u.id === userId);
 
-    if (index === -1) {
-      return sendJson(res, 404, {
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    if (body.name !== undefined && !isNonEmptyString(body.name)) {
-      return sendJson(res, 400, {
-        success: false,
-        message: "Name must be a non-empty string",
-      });
-    }
+    if (index === -1)
+      return sendJson(res, 404, { success: false, message: "User not found" });
 
     const currentUser = users[index]!;
+
     const updatedUser: User = {
       ...currentUser,
-      ...(body.name !== undefined ? { name: body.name.trim() } : {}),
+      ...(isNonEmptyString(body.name)
+        ? { name: (body.name as string).trim() }
+        : {}),
+      ...(isNonEmptyString(body.country)
+        ? { country: (body.country as string).trim() }
+        : {}),
+      ...(isNonEmptyString(body.study)
+        ? { study: (body.study as string).trim() }
+        : {}),
       updatedAt: new Date().toISOString(),
     };
 
@@ -146,17 +156,15 @@ addRoute("PUT", "/api/users/:id", async (req, res) => {
 
     sendJson(res, 200, {
       success: true,
-      message: "User updated successfully",
+      message: "Updated",
       data: updatedUser,
     });
   } catch {
-    sendJson(res, 400, {
-      success: false,
-      message: "Invalid JSON body",
-    });
+    sendJson(res, 400, { success: false, message: "Invalid JSON body" });
   }
 });
 
+// DELETE route
 addRoute("DELETE", "/api/users/:id", (req, res) => {
   const id = (req as AppRequest).params?.id || "";
   const userId = parsePositiveId(id);
