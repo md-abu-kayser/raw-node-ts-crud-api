@@ -1,22 +1,45 @@
 import fs from "fs";
 import path from "path";
+import { User } from "../types/user";
 
-const filePath = path.resolve(process.cwd(), "src/data/users.json");
+const dataDir = path.join(process.cwd(), "src", "data");
+const filePath = path.join(dataDir, "users.json");
 
-export interface User {
-  id: string | number;
-  [key: string]: unknown;
+function ensureDatabaseFile() {
+  // Create the data directory and file if they do not exist.
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, "[]\n", "utf-8");
+  }
 }
+
+ensureDatabaseFile();
 
 export function readUsers(): User[] {
   try {
-    const data = fs.readFileSync(filePath, "utf-8");
-    return JSON.parse(data) as User[];
+    const raw = fs.readFileSync(filePath, "utf-8").trim();
+
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+
+    return Array.isArray(parsed) ? (parsed as User[]) : [];
   } catch {
     return [];
   }
 }
 
-export function writeUsers(users: User[]): void {
-  fs.writeFileSync(filePath, JSON.stringify(users, null, 2), "utf-8");
+export function writeUsers(users: User[]) {
+  // Write to a temporary file first, then replace the original file.
+  const tempFilePath = `${filePath}.tmp`;
+
+  fs.writeFileSync(
+    tempFilePath,
+    JSON.stringify(users, null, 2) + "\n",
+    "utf-8",
+  );
+  fs.renameSync(tempFilePath, filePath);
 }
