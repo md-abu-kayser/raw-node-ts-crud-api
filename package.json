@@ -1,24 +1,26 @@
 {
-  "name": "raw-nodejs-api-server-typescript",
+  "name": "raw-node-ts-crud-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Professional raw Node.js and TypeScript CRUD API",
+  "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/md-abu-kayser/raw-nodejs-api-server-typescript.git"
+    "url": "git+https://github.com/md-abu-kayser/raw-node-ts-crud-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/md-abu-kayser/raw-nodejs-api-server-typescript/issues"
+    "url": "https://github.com/md-abu-kayser/raw-node-ts-crud-api/issues"
   },
-  "homepage": "https://github.com/md-abu-kayser/raw-nodejs-api-server-typescript#readme",
+  "homepage": "https://github.com/md-abu-kayser/raw-node-ts-crud-api#readme",
   "devDependencies": {
     "@types/node": "^25.6.0",
     "ts-node": "^10.9.2",
