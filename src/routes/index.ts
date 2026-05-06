@@ -1,45 +1,63 @@
-import { readUsers, writeUsers, User } from "../helpers/fileDb";
-import parseBody from "../helpers/parseBody";
-import { registerRoute } from "../helpers/RouteHandler";
+import { addRoute } from "../helpers/router";
 import sendJson from "../helpers/sendJson";
+import parseBody from "../helpers/parseBody";
+import { isNonEmptyString, parsePositiveId } from "../helpers/validators";
+import { readUsers, writeUsers } from "../helpers/fileDb";
+import { User } from "../types/user";
+import { AppRequest } from "../types/http";
 
-registerRoute("GET", "/", (req, res) => {
+function getNextId(users: User[]) {
+  return users.length === 0 ? 1 : Math.max(...users.map((user) => user.id)) + 1;
+}
+
+addRoute("GET", "/", (req, res) => {
+  // This is the home route, useful for a quick API identity check.
   sendJson(res, 200, {
     success: true,
-    message: "Hello from Node.js with TypeScript",
+    message: "Hello from raw Node.js with TypeScript",
     path: req.url,
   });
 });
 
-registerRoute("GET", "/api", (req, res) => {
+addRoute("GET", "/health", (req, res) => {
+  // Health route is often used by clients, load balancers, and hosting platforms.
   sendJson(res, 200, {
     success: true,
-    message: "Health status ok",
+    message: "Server is healthy",
+    uptime: process.uptime(),
     path: req.url,
   });
 });
 
-registerRoute("GET", "/api/users", (req, res) => {
+addRoute("GET", "/api/users", (req, res) => {
   const users = readUsers();
 
   sendJson(res, 200, {
     success: true,
+    count: users.length,
     data: users,
   });
 });
 
-registerRoute("GET", "/api/users/:id", (req, res) => {
-  const { id } = req.params || {};
-  const users = readUsers();
+addRoute("GET", "/api/users/:id", (req, res) => {
+  const { id } = (req as AppRequest).params;
+  const userId = parsePositiveId(id);
 
-  const user = users.find((item) => String(item.id) === String(id));
+  if (!userId) {
+    return sendJson(res, 400, {
+      success: false,
+      message: "Invalid user id",
+    });
+  }
+
+  const users = readUsers();
+  const user = users.find((item) => item.id === userId);
 
   if (!user) {
-    sendJson(res, 404, {
+    return sendJson(res, 404, {
       success: false,
       message: "User not found",
     });
-    return;
   }
 
   sendJson(res, 200, {
@@ -48,132 +66,126 @@ registerRoute("GET", "/api/users/:id", (req, res) => {
   });
 });
 
-registerRoute("POST", "/api/users", async (req, res) => {
-  const body = await parseBody(req);
-  const users = readUsers();
+addRoute("POST", "/api/users", async (req, res) => {
+  try {
+    const body = (await parseBody(req)) as { name?: unknown };
+    const name = body.name;
 
-  const newUser: User = {
-    id: Date.now(),
-    ...body,
-  };
+    if (!isNonEmptyString(name)) {
+      return sendJson(res, 400, {
+        success: false,
+        message: "Name is required",
+      });
+    }
 
-  users.push(newUser);
-  writeUsers(users);
+    const users = readUsers();
+    const now = new Date().toISOString();
 
-  sendJson(res, 201, {
-    success: true,
-    message: "User created successfully",
-    data: newUser,
-  });
+    const newUser: User = {
+      id: getNextId(users),
+      name: name.trim(),
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    users.push(newUser);
+    writeUsers(users);
+
+    sendJson(res, 201, {
+      success: true,
+      message: "User created successfully",
+      data: newUser,
+    });
+  } catch {
+    sendJson(res, 400, {
+      success: false,
+      message: "Invalid JSON body",
+    });
+  }
 });
 
-registerRoute("PUT", "/api/users/:id", async (req, res) => {
-  const { id } = req.params || {};
-  const body = await parseBody(req);
+addRoute("PUT", "/api/users/:id", async (req, res) => {
+  try {
+    const { id } = (req as AppRequest).params;
+    const userId = parsePositiveId(id);
 
-  const users = readUsers();
-  const index = users.findIndex((user) => String(user.id) === String(id));
+    if (!userId) {
+      return sendJson(res, 400, {
+        success: false,
+        message: "Invalid user id",
+      });
+    }
 
-  if (index === -1) {
-    sendJson(res, 404, {
-      success: false,
-      message: "User not found",
+    const body = (await parseBody(req)) as { name?: unknown };
+    const users = readUsers();
+    const index = users.findIndex((user) => user.id === userId);
+
+    if (index === -1) {
+      return sendJson(res, 404, {
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Update only allowed fields and keep the record consistent.
+    if (body.name !== undefined && !isNonEmptyString(body.name)) {
+      return sendJson(res, 400, {
+        success: false,
+        message: "Name must be a non-empty string",
+      });
+    }
+
+    const currentUser = users[index]!;
+    const updatedUser: User = {
+      ...currentUser,
+      ...(body.name !== undefined ? { name: body.name.trim() } : {}),
+      updatedAt: new Date().toISOString(),
+    };
+
+    users[index] = updatedUser;
+    writeUsers(users);
+
+    sendJson(res, 200, {
+      success: true,
+      message: "User updated successfully",
+      data: updatedUser,
     });
-    return;
-  }
-
-  const currentUser = users[index];
-  if (!currentUser) {
-    sendJson(res, 404, {
+  } catch {
+    sendJson(res, 400, {
       success: false,
-      message: "User not found",
+      message: "Invalid JSON body",
     });
-    return;
   }
-
-  users[index] = {
-    ...currentUser,
-    ...body,
-    id: currentUser.id,
-  };
-
-  writeUsers(users);
-
-  sendJson(res, 200, {
-    success: true,
-    message: `User ${id} updated successfully`,
-    data: users[index],
-  });
 });
 
-registerRoute("PATCH", "/api/users/:id", async (req, res) => {
-  const { id } = req.params || {};
-  const body = await parseBody(req);
+addRoute("DELETE", "/api/users/:id", (req, res) => {
+  const { id } = (req as AppRequest).params;
+  const userId = parsePositiveId(id);
 
-  const users = readUsers();
-  const index = users.findIndex((user) => String(user.id) === String(id));
-
-  if (index === -1) {
-    sendJson(res, 404, {
+  if (!userId) {
+    return sendJson(res, 400, {
       success: false,
-      message: "User not found",
+      message: "Invalid user id",
     });
-    return;
   }
 
-  const currentUser = users[index];
-  if (!currentUser) {
-    sendJson(res, 404, {
-      success: false,
-      message: "User not found",
-    });
-    return;
-  }
-
-  users[index] = {
-    ...currentUser,
-    ...body,
-    id: currentUser.id,
-  };
-
-  writeUsers(users);
-
-  sendJson(res, 200, {
-    success: true,
-    message: `User ${id} partially updated successfully`,
-    data: users[index],
-  });
-});
-
-registerRoute("DELETE", "/api/users/:id", (req, res) => {
-  const { id } = req.params || {};
   const users = readUsers();
-
-  const index = users.findIndex((user) => String(user.id) === String(id));
+  const index = users.findIndex((user) => user.id === userId);
 
   if (index === -1) {
-    sendJson(res, 404, {
+    return sendJson(res, 404, {
       success: false,
       message: "User not found",
     });
-    return;
   }
 
   const deletedUser = users[index];
-  if (!deletedUser) {
-    sendJson(res, 404, {
-      success: false,
-      message: "User not found",
-    });
-    return;
-  }
-
   users.splice(index, 1);
   writeUsers(users);
 
   sendJson(res, 200, {
     success: true,
-    message: `User ${id} deleted successfully`,
+    message: "User deleted successfully",
     data: deletedUser,
   });
 });
