@@ -1,5 +1,5 @@
 {
-  "name": "raw-node-ts-crud-api",
+  "name": "raw-node-typescript-crud-api",
   "version": "1.0.0",
   "description": "Professional raw Node.js and TypeScript CRUD API",
   "main": "dist/server.js",
@@ -12,15 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/md-abu-kayser/raw-node-ts-crud-api.git"
+    "url": "git+https://github.com/md-abu-kayser/raw-node-typescript-crud-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/md-abu-kayser/raw-node-ts-crud-api/issues"
+    "url": "https://github.com/md-abu-kayser/raw-node-typescript-crud-api/issues"
   },
-  "homepage": "https://github.com/md-abu-kayser/raw-node-ts-crud-api#readme",
+  "homepage": "https://github.com/md-abu-kayser/raw-node-typescript-crud-api#readme",
   "devDependencies": {
     "@types/node": "^25.6.0",
     "ts-node": "^10.9.2",
