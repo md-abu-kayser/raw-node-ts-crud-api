@@ -3,7 +3,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-yellow.svg)](https://opensource.org/licenses/ISC)
-[![GitHub Stars](https://img.shields.io/github/stars/md-abu-kayser/raw-node-ts-crud-api?style=social)](https://github.com/md-abu-kayser/raw-node-ts-crud-api)
+[![GitHub Stars](https://img.shields.io/github/stars/md-abu-kayser/raw-node-typescript-crud-api?style=social)](https://github.com/md-abu-kayser/raw-node-typescript-crud-api)
 
 A professional, production-ready CRUD (Create, Read, Update, Delete) API built entirely with raw Node.js and TypeScript. This project demonstrates advanced server-side development techniques without relying on frameworks like Express, showcasing deep understanding of HTTP protocols, routing, and asynchronous programming.
 
@@ -35,8 +35,8 @@ A professional, production-ready CRUD (Create, Read, Update, Delete) API built e
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/md-abu-kayser/raw-node-ts-crud-api.git
-   cd raw-node-ts-crud-api
+   git clone https://github.com/md-abu-kayser/raw-node-typescript-crud-api.git
+   cd raw-node-typescript-crud-api
    ```
 
 2. **Install dependencies**
@@ -165,7 +165,7 @@ curl -X DELETE http://localhost:5000/api/users/1
 ## 🏗 Project Structure
 
 ```
-raw-node-ts-crud-api/
+raw-node-typescript-crud-api/
 ├── src/
 │   ├── server.ts           # Main server file
 │   ├── config/
