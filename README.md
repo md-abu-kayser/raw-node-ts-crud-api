@@ -1,8 +1,8 @@
 # Raw Node.js & TypeScript CRUD API
 
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
-[![License: ISC](https://img.shields.io/badge/License-ISC-yellow.svg)](https://opensource.org/licenses/ISC)
+[![Node.js](https://img.shields.io/badge/Node.js-24+-green.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0+-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/md-abu-kayser/raw-node-typescript-crud-api?style=social)](https://github.com/md-abu-kayser/raw-node-typescript-crud-api)
 
 A professional, production-ready CRUD (Create, Read, Update, Delete) API built entirely with raw Node.js and TypeScript. This project demonstrates advanced server-side development techniques without relying on frameworks like Express, showcasing deep understanding of HTTP protocols, routing, and asynchronous programming.
@@ -71,23 +71,23 @@ npm run start        # Run production server
 npm run typecheck    # Run TypeScript type checking
 ```
 
-### Testing the API
+## Testing the API
 
 Use curl, Postman, or any HTTP client to test the endpoints.
 
-#### Health Check
+### Health Check
 
 ```bash
 curl http://localhost:5000/health
 ```
 
-#### Get All Users
+### Get All Users
 
 ```bash
 curl http://localhost:5000/api/users
 ```
 
-#### Create a New User
+### Create a New User
 
 ```bash
 curl -X POST http://localhost:5000/api/users \
@@ -99,13 +99,13 @@ curl -X POST http://localhost:5000/api/users \
   }'
 ```
 
-#### Get a Specific User
+### Get a Specific User
 
 ```bash
 curl http://localhost:5000/api/users/1
 ```
 
-#### Update a User
+### Update a User
 
 ```bash
 curl -X PUT http://localhost:5000/api/users/1 \
@@ -116,7 +116,7 @@ curl -X PUT http://localhost:5000/api/users/1 \
   }'
 ```
 
-#### Delete a User
+### Delete a User
 
 ```bash
 curl -X DELETE http://localhost:5000/api/users/1
@@ -136,7 +136,7 @@ curl -X DELETE http://localhost:5000/api/users/1
 
 ### Request/Response Examples
 
-#### Successful Response
+### Successful Response
 
 ```json
 {
@@ -153,7 +153,7 @@ curl -X DELETE http://localhost:5000/api/users/1
 }
 ```
 
-#### Error Response
+### Error Response
 
 ```json
 {
@@ -226,17 +226,20 @@ We welcome contributions! Please follow these steps:
 - Update documentation
 - Use conventional commit messages
 
-## 📄 License
+### License
 
-This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
+- This project is licensed under the terms of the **[MIT License](./LICENSE)**.
+- You may replace or update the license as needed for client or proprietary projects.
 
-## 👨‍💻 Author
+---
 
-**Md Abu Kayser**
+### Contact and Maintainer
 
-- GitHub: [@md-abu-kayser](https://github.com/md-abu-kayser)
-- LinkedIn: [Your LinkedIn Profile]
-- Email: [your.email@example.com]
+- **Name:** Md Abu Kayser
+- **Project:** _raw-node-typescript-crud-api_
+- **Maintainer:** [md-abu-kayser](https://github.com/md-abu-kayser)
+- **Email:** [abu.kayser.official@gmail.com](mailto:abu.kayser.official@gmail.com)
+- **GitHub:** [github.com/abu.kayser-official](https://github.com/md-abu-kayser)
 
 ## 🙏 Acknowledgments
 
